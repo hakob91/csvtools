@@ -29,7 +29,7 @@ def main():
 
     all_fields = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
 
-    print(parse_range(all_fields, '4-'))
+    print(parse_range(all_fields, '1-3,6, '.strip(", ")))
 
 
 def parse_args():
