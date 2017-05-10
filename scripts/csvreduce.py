@@ -10,7 +10,7 @@ EXAMPLES = 'example: cat file.txt | csvpp -f | less -SR'
 def print_row(row, columns, separator, output_stream):
     """
     Prints a row
-    
+
     :param row: row represented as a list of columns
     :param columns: a list of index columns
     :param separator: a string separator for line
@@ -47,13 +47,30 @@ def parse_args():
     parser = ArgumentParser(description=DESCRIPTION, epilog=EXAMPLES)
     parser.add_argument('-s', '--separator', type=str, help='Separator to be used', default=',')
     parser.add_argument('-o', '--output_file', type=str, help='Output file. stdout is used by default')
-    parser.add_argument('-f', '--fields',  type=str, help="Specify list of fields (comma separated) to cut. Field names or field numbers can be used. Dash can be used to specify fields ranges. Range 'F1-F2' stands for all fields between F1 and F2. Range '-F2' stands for all fields up to F2. Range 'F1-' stands for all fields from F1 til the end.", default='1-')
-    parser.add_argument('-c', '--complement', help='Instead of leaving only specified columns, leave all except specified.', action="store_true")
-    parser.add_argument('-u', '--unique', help='Remove duplicates from list of FIELDS', action="store_false")
+    parser.add_argument('-k', '--keys', type=str,
+                        help="Comma-separated list of columns to be used as reduce keys. "
+                             "Column names or column numbers can be used here",
+                        default='1-')
+    parser.add_argument('-i', '--integration_step',
+                        help='Divide each aggregation group into smaller groups each containing INTEGRATION_STEP rows.')
+    parser.add_argument('-a', '--agregators', help="Comma-separated list of value-aggregators. "
+                                                   "Each aggregator might be one of the following: "
+                                                   "first, last, sum, mean, min, max, std (standard deviation), count. "
+                                                   "Each aggragator (except count) is a function expecting "
+                                                   "2 arguments: column name or number and the resulting field name. "
+                                                   "The resulting field name has a default value of "
+                                                   "$AGGREGATOR_NAME_$FIRST_ARGUMENT' (e.g. for sum('a') it will have a "
+                                                   "default value of sum_a). Please see the examples for more details.")
+    parser.add_argument('--no-sort', help='If provided, the input will not be sorted prior to reduce operation. '
+                                          'Be careful, that might lead to an incorrect reduce result. '
+                                          'If your input is already sorted by the KEYS, this option will '
+                                          'significantly speed up the reduce.',
+                        action="store_false")
     parser.add_argument('file', nargs='?', help='File to read input from. stdin is used by default')
 
     args = parser.parse_args()
 
     return args
+
 
 main()
